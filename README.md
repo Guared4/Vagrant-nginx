@@ -1,0 +1,2 @@
+# Vagrant-nginx
+ Vagrant+nginx
