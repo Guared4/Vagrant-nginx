@@ -16,23 +16,24 @@ Vagrant.configure("2") do |config|
   MACHINES.each do |boxname, boxconfig|
 
     config.vm.define boxname do |box|
-   
+
       box.vm.box = boxconfig[:box_name]
       box.vm.host_name = boxconfig[:vm_name]
-      
+
       box.vm.provider "virtualbox" do |v|
         v.memory = 2048
         v.cpus = 2
        end
+
       boxconfig[:net].each do |ipconf|
         box.vm.network("private_network", ip: ipconf[0], adapter: ipconf[1], netmask: ipconf[2], virtualbox__intnet: ipconf[3])
+        box.vm.network "forwarded_port", guest: 8080, host: 8080
       end
 
       if boxconfig.key?(:public)
         box.vm.network "public_network", boxconfig[:public]
       end
-    config.vm.network  "forwarded_port", guest: 8080, host: 8080
-  
+
         box.vm.provision "shell", inline: <<-SHELL
         mkdir -p ~root/.ssh
         cp ~vagrant/.ssh/auth* ~root/.ssh
@@ -42,3 +43,4 @@ Vagrant.configure("2") do |config|
     end
   end
 end
+
